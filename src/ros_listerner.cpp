@@ -40,12 +40,9 @@ void chatterCallback(const sensor_msgs::PointCloud2::ConstPtr & msg)
         for (int i=0;i<temp_cloud->points.size();i++)
         {
             cloud_octo.push_back(temp_cloud->points[i].x,temp_cloud->points[i].y,temp_cloud->points[i].z);
-
-            //tree.insertPointCloud();
-            // tree.insertPointCloud(cloud_octo,octomap::point3d(pose(0,3) , pose(1,3),pose(2,3)));
         }
-//        tree.insertPointCloud( cloud_octo,octomap::point3d(1,1,1));
-        tree.insertPointCloud( cloud_octo);
+        tree.insertPointCloud( cloud_octo,octomap::point3d(1,1,1));
+        //tree.insertPointCloud( cloud_octo,true);
 
         for  (int i=0;i<temp_cloud->points.size();i++)
         {
