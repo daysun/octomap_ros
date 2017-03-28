@@ -1,8 +1,0 @@
-prefix=/usr/local
-
-Name: octomap_ros
-Description: Description of octomap_ros
-Version: 0.4.0
-Cflags: -I/usr/local/include -I/opt/ros/indigo/include
-Libs: -L/usr/local/lib -loctomap_ros -l:/opt/ros/indigo/lib/liboctomap.so -l:/opt/ros/indigo/lib/liboctomath.so
-Requires: sensor_msgs tf octomap_msgs
