@@ -7,11 +7,11 @@ This repository continues from the groovy branch imported from SVN:
 http://alufr-ros-pkg.googlecode.com/svn/branches/octomap_stacks-groovy-devel/octomap_ros/ 
 See https://code.google.com/p/alufr-ros-pkg/ for the previous versions.
 
-2、Compile:
-mkdir build/
-cd build/
-cmake ..
-make
+2、Compile:<br/>
+mkdir build/ <br/>
+cd build/ <br/>
+cmake ..<br/>
+make<br/>
 
 3、Usage:(command -->explanation)
 rosrun octomap_ros rcv_test -->receiving data--"/ORB_SLAM/pointcloud2" and transforming it into the octomap format
