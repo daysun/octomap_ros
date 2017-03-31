@@ -1,0 +1,4 @@
+#ifndef COLORIDOCTREE_H
+#define COLORIDOCTREE_H
+
+#endif // COLORIDOCTREE_H
