@@ -12,16 +12,19 @@
 using namespace std;
 using namespace octomap;
 
-///print only one
+///print the info of node
 void print_query_info(int query, list<ColorOcTreeNode*> node) {
-  if ((*node.begin()) != NULL) {
+    if(node.size()){
+            list<ColorOcTreeNode*>::iterator start ;
+             list<ColorOcTreeNode*>::iterator end = node.end();
 
-    cout << "occupancy probability at id:" << query << ":\t " << (*node.begin())->getOccupancy() << endl;
-    //cout << "color of node is: " << (*node.begin())->getColor()<< endl;
-    cout<<"id of node is:"<<(*node.begin())->getId()<<endl;
-  }
-  else
-    cout << "occupancy probability at id: " << query << ":\t is unknown" << endl;
+             for(start = node.begin() ; start != end ; ++start){
+                   cout << "occupancy probability at id " << query << ":\t " << (*start)->getOccupancy() << endl;
+                   cout << "color of node is: "  << (*start)->getColor()<< endl;
+             }
+    }else {
+        cout << "occupancy probability at id: " << query << ":\t is unknown" << endl;
+    }
 }
 
 int main() {
@@ -50,7 +53,8 @@ int main() {
         point3d endpoint ((float) x*0.02f+2.0f, (float) y*0.02f+2.0f, (float) z*0.02f+2.0f);
         ColorOcTreeNode* n = tree.updateNode(endpoint, false);
         n->setColor(255,255,0); // set color to yellow
-        n->setId(num);
+        tree.integrateNodeId((float) x*0.02f+2.0f, (float) y*0.02f+2.0f, (float) z*0.02f+2.0f,num);
+        //n->setId(num);
       }
       num +=x;
     }
@@ -67,26 +71,12 @@ int main() {
   //EXPECT_TRUE(tree.write(filename));
   tree.write(filename);
 
-/*
-  // read tree file
-  cout << "Reading color tree from "<< filename <<"\n";
-  AbstractOcTree* read_tree = AbstractOcTree::read(filename);
-  EXPECT_TRUE(read_tree);
-  EXPECT_EQ(read_tree->getTreeType().compare(tree.getTreeType()), 0);
-  EXPECT_FLOAT_EQ(read_tree->getResolution(), tree.getResolution());
-  EXPECT_EQ(read_tree->size(), tree.size());
-  ColorOcTree* read_color_tree = dynamic_cast<ColorOcTree*>(read_tree);
-  EXPECT_TRUE(read_color_tree);
-  */
-
-
   cout << "Performing some queries:" << endl;
   {
-    int id = 0;
+    int id = -269;
   list<  ColorOcTreeNode *> my_result = tree.searchId(id);
 //    ColorOcTreeNode* result = tree.search (query);
 //    ColorOcTreeNode* result2 = read_color_tree->search (query);
-    std::cout << "READ: ";
     print_query_info(id, my_result);
  //   std::cout << "WRITE: ";
  //   print_query_info(id, my_result2);
