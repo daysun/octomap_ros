@@ -1,15 +1,9 @@
 octomap_ros
 ===========
-<b>Make sure you have installed all these below.</b><br/>
-1、OpenCV<br/>
-&ensp;&ensp;You can get information about this in http://docs.opencv.org/master/d9/df8/tutorial_root.html<br/>
-2、ROS<br/>
-  &ensp;&ensp; You can get information about this in http://wiki.ros.org/indigo/Installation/Ubuntu<br/>
-3、octomap && octovis<br/>
- &ensp;&ensp;  You can get information about this in https://github.com/OctoMap/octomap<br/>
- &ensp;&ensp;  To get more information about octovis, you can refer to http://wiki.ros.org/octovis<br/>
-4、PCL<br/>
-  &ensp;&ensp; You can get information about this in http://pointclouds.org/downloads/<br/>
+<b>Dependencies</b><br/>
+1、OpenCV(http://docs.opencv.org/master/d9/df8/tutorial_root.html)<br/>
+2、octomap(https://github.com/OctoMap/octomap) && octovis(http://wiki.ros.org/octovis)<br/>
+3、PCL(http://pointclouds.org/downloads/)<br/>
 
 <b>Compile</b><br/>
 You should put this project under your ROS work space, such as <i>your_ros_path/src/</i><br/>
