@@ -2,12 +2,12 @@
 #include "std_msgs/String.h"
 #include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/point_cloud2_iterator.h>
-#include <octomap_ros/conversions.h>
 #include <assert.h>
+#include <cstddef>
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>
+#include "octomap_ros/Id_PointCloud2.h"
 //pcl
-#include <pcl/io/pcd_io.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl_conversions/pcl_conversions.h>
@@ -19,58 +19,80 @@
 #include <pcl/visualization/pcl_visualizer.h>
 //octomap
 #include <octomap/octomap.h>
-#include <octomap/ColorOcTree.h>
+#include "octomap_ros/ColorOcTree.h"
+#include<octomap/OcTreeNode.h>
 using namespace std;
-
 
 ///receive data(orb-slam published it) from ros
 /// saved it as sample.ot
-octomap::ColorOcTree tree( 0.05 );
-octomap::ColorOcTree tree_change( 0.05 );
+octomap::ColorOcTree tree( 0.03 );
+//octomap::ColorOcTree tree_change( 0.05 );
 
-void chatterCallback(const sensor_msgs::PointCloud2::ConstPtr & msg)
-{
-       pcl::PCLPointCloud2 pcl_pc2;
-        pcl_conversions::toPCL(*msg,pcl_pc2);
-        pcl::PointCloud<pcl::PointXYZRGB>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-        pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);
-         octomap::Pointcloud cloud_octo;
+//ros::Duration allTime;
 
-        for (int i=0;i<temp_cloud->points.size();i++)
-        {
-            cloud_octo.push_back(temp_cloud->points[i].x,temp_cloud->points[i].y,temp_cloud->points[i].z);
-        }
-        tree.insertPointCloud( cloud_octo,octomap::point3d(1,1,1));
-        //tree.insertPointCloud( cloud_octo,true);
+void chatterCallback(const octomap_ros::Id_PointCloud2::ConstPtr & my_msg)
+{    
+//      ros::Time tB = ros::Time::now();
+//    cout<<my_msg->kf_id<<endl;
+    pcl::PCLPointCloud2 pcl_pc2;
+    pcl_conversions::toPCL(my_msg->msg,pcl_pc2);
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+    pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);
+    for (int i=0;i<temp_cloud->points.size();i++)
+    {
+        tree.updateNode(octomap::point3d(temp_cloud->points[i].x,temp_cloud->points[i].y,temp_cloud->points[i].z),true);
+     }
 
-        for  (int i=0;i<temp_cloud->points.size();i++)
-        {
-            tree.integrateNodeColor( temp_cloud->points[i].x,temp_cloud->points[i].y,temp_cloud->points[i].z,
-                                     temp_cloud->points[i].r,temp_cloud->points[i].g,temp_cloud->points[i].b);
-        }
-        tree.updateInnerOccupancy();
+    for  (int i=0;i<temp_cloud->points.size();i++)
+    {
+        tree.IntegrateNodeColor( temp_cloud->points[i].x,temp_cloud->points[i].y,temp_cloud->points[i].z,
+                                 temp_cloud->points[i].r,temp_cloud->points[i].g,temp_cloud->points[i].b);
+        tree.integrateNodeId(temp_cloud->points[i].x,temp_cloud->points[i].y,temp_cloud->points[i].z,
+                             my_msg->kf_id);
+    }
+    tree.updateInnerOccupancy();
+//    ros::Duration bTcreate = ros::Time::now() - tB;
+//    allTime += bTcreate;
+//      std::cout << "time cost per key frame: " << bTcreate.toSec() << std::endl; //0.04
 }
 
-void chatterCallback_change(const sensor_msgs::PointCloud2::ConstPtr & msg)
-{
-       pcl::PCLPointCloud2 pcl_pc2;
-        pcl_conversions::toPCL(*msg,pcl_pc2);
-        pcl::PointCloud<pcl::PointXYZRGB>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-        pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);
-         octomap::Pointcloud cloud_octo;
+///after ORB-SLAM local update, update the octomap
+void chatterCallback_change(const octomap_ros::Id_PointCloud2::ConstPtr & my_msg)
+{    
+    //delete accord to id--not done yet
+    cout<<"change:"<<my_msg->kf_id<<endl;
+    
+    //add new pointCloud
+    /*pcl::PCLPointCloud2 pcl_pc2;
+    pcl_conversions::toPCL(my_msg->msg,pcl_pc2);
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+    pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);
+    for (int i=0;i<temp_cloud->points.size();i++)
+    {
+        tree.updateNode(octomap::point3d(temp_cloud->points[i].x,temp_cloud->points[i].y,temp_cloud->points[i].z),true);
+     }
 
-        for (int i=0;i<temp_cloud->points.size();i++)
-        {
-            cloud_octo.push_back(temp_cloud->points[i].x,temp_cloud->points[i].y,temp_cloud->points[i].z);
-        }
-        tree_change.insertPointCloud( cloud_octo,octomap::point3d(1,1,1));
+    for  (int i=0;i<temp_cloud->points.size();i++)
+    {
+        tree.IntegrateNodeColor( temp_cloud->points[i].x,temp_cloud->points[i].y,temp_cloud->points[i].z,
+                                 temp_cloud->points[i].r,temp_cloud->points[i].g,temp_cloud->points[i].b);
+        tree.integrateNodeId(temp_cloud->points[i].x,temp_cloud->points[i].y,temp_cloud->points[i].z,
+                             my_msg->kf_id);
+    }
+    tree.updateInnerOccupancy();*/
+}
 
-        for  (int i=0;i<temp_cloud->points.size();i++)
-        {
-            tree_change.integrateNodeColor( temp_cloud->points[i].x,temp_cloud->points[i].y,temp_cloud->points[i].z,
-                                     temp_cloud->points[i].r,temp_cloud->points[i].g,temp_cloud->points[i].b);
+void coutInnerOccupancy(octomap::ColorOcTreeNode* node, unsigned int depth,int tree_depth) {
+  if (node->hasChildren()){
+    if (depth < tree_depth){
+      for (unsigned int i=0; i<8; i++) {
+        if (node->childExists(i)) {
+          coutInnerOccupancy(node->getChild(i), depth+1,tree_depth);
         }
-        tree_change.updateInnerOccupancy();
+      }
+    }
+    cout<<node->getLogOdds()<<"\n";
+  }
 }
 
 int main(int argc, char **argv)
@@ -81,12 +103,17 @@ int main(int argc, char **argv)
   ros::NodeHandle n;
 
   ros::Subscriber sub = n.subscribe("/ORB_SLAM/pointcloud2", 1000, chatterCallback);
-  //ros::Subscriber sub_change = n.subscribe("/ORB_SLAM/pointcloudfull2", 1000, chatterCallback_change);
+  ros::Subscriber sub_change = n.subscribe("ORB_SLAM/pointcloudlocalup2", 1000, chatterCallback_change);
 
   ros::spin();
   ros::shutdown();
+//  std::cout << "time cost all: " << allTime.toSec() << std::endl; //hpcl_office_asuse.bag-34.388
+
+  //test updateOccupancyChildren--test the children's log-odds
+  //int tree_depth = tree.getTreeDepth();
+  //coutInnerOccupancy(tree.getRoot(),0,tree_depth);
+
   tree.write( "origin.ot" );
-  //tree_change.write( "change.ot" );
   cout<<"done."<<endl;
 
   return 0;
