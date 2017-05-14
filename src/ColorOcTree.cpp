@@ -3,11 +3,12 @@
 #include "octomap_ros/ColorOcTree.h"
 #include <math.h>
 #include <algorithm>
+#include<octomap/AbstractOccupancyOcTree.h>
 using namespace std;
 
 namespace octomap {
 
-  // node implementation  --------------------------------------
+  // node implementation
   std::ostream& ColorOcTreeNode::writeValue (std::ostream &s) const {
     // 1 bit for each children; 0: empty, 1: allocated
     std::bitset<8> children;
@@ -75,13 +76,15 @@ namespace octomap {
     color = getAverageChildColor();
   }
 
-  // pruning =============
-  ///not consider the id yet
+  // pruning-consider prune it when the id are the same
   bool ColorOcTreeNode::pruneNode() {
     // checks for equal occupancy only, color ignored
+//      cout<<"==prune\n";
     if (!this->collapsible()) return false;
     // set occupancy value
     setLogOdds(getChild(0)->getLogOdds());
+    //set id
+    setId(getChild(0)->getId());
     // set color to average color
     if (isColorSet()) color = getAverageChildColor();
     // delete children
@@ -103,7 +106,7 @@ namespace octomap {
     }
   }
 
-  // tree implementation  --------------------------------------
+  // tree implementation
   ColorOcTree::ColorOcTree(double resolution)
   : OccupancyOcTreeBase<ColorOcTreeNode>(resolution) {
     ColorOcTreeMemberInit.ensureLinking();
@@ -200,13 +203,6 @@ list<ColorOcTreeNode*> ColorOcTree::searchId(int id){
     return idList;
 }
 
-///using id-structure to search
-list<ColorOcTreeNode*> ColorOcTree::searchId2(int id){
-        list<ColorOcTreeNode*> idList;
-        this->searchDeleteById(idList,this->root,0,id);
-        return idList;
-}
-
 bool isContained(vector<int> id,int key){
     int low=0;
     int high=id.size()-1;
@@ -224,6 +220,33 @@ bool isContained(vector<int> id,int key){
     return false;
 }
 
+///using id-structure to search then delete node(set unoccupied)
+void ColorOcTree::deleteById(int id){
+    this->searchDeleteById(this->root,0,id);
+//    this->updateInnerOccupancy();
+}
+void ColorOcTree::searchDeleteById(ColorOcTreeNode* node, unsigned int depth,int sId){
+    if (node->hasChildren()){
+      if (depth < this->tree_depth)
+          if(isContained(node->id,sId))
+              for (unsigned int i=0; i<8; i++)
+                if (node->childExists(i))
+                  searchDeleteById(node->getChild(i), depth+1,sId);
+    }else{
+         if(isContained(node->id,sId))
+             //set unoccupied
+             node->setLogOdds(octomap::AbstractOccupancyOcTree::getProbMissLog());
+    }
+}
+
+//using id-structure to search
+//for test
+list<ColorOcTreeNode*> ColorOcTree::searchId2(int id){
+        list<ColorOcTreeNode*> idList;
+        this->searchDeleteById(idList,this->root,0,id);
+        return idList;
+}
+//for test
 void ColorOcTree::searchDeleteById( list<ColorOcTreeNode*> & idList ,ColorOcTreeNode* node, unsigned int depth,int sId){
     if (node->hasChildren()){
       if (depth < this->tree_depth)
@@ -260,6 +283,41 @@ void ColorOcTree::searchDeleteById( list<ColorOcTreeNode*> & idList ,ColorOcTree
     this->updateInnerOccupancyRecurs(this->root, 0);
   }
 
+  //prune tree
+  void ColorOcTree::pruneTree(ColorOcTreeNode* node, unsigned int depth){
+      if (node->hasChildren()){
+        if (depth < this->tree_depth){
+              if(node->childExists(0) && node->childExists(1) &&
+                      node->childExists(2) && node->childExists(3) &&
+                      node->childExists(4) && node->childExists(5) &&
+                      node->childExists(6) && node->childExists(7) &&
+                            (node->getChild(0)->id ==node->getChild(1)->id) &&
+                          (node->getChild(1)->id ==node->getChild(2)->id)  &&
+                          (node->getChild(2)->id ==node->getChild(3)->id)  &&
+                          (node->getChild(3)->id ==node->getChild(4)->id) &&
+                          (node->getChild(4)->id ==node->getChild(5)->id) &&
+                          (node->getChild(5)->id ==node->getChild(6)->id)  &&
+                          (node->getChild(6)->id ==node->getChild(7)->id)   &&
+                      (node->getChild(0)->getLogOdds() ==node->getChild(1)->getLogOdds()) &&
+                      (node->getChild(1)->getLogOdds() ==node->getChild(2)->getLogOdds())  &&
+                      (node->getChild(2)->getLogOdds() ==node->getChild(3)->getLogOdds())  &&
+                      (node->getChild(3)->getLogOdds() ==node->getChild(4)->getLogOdds()) &&
+                      (node->getChild(4)->getLogOdds() ==node->getChild(5)->getLogOdds()) &&
+                      (node->getChild(5)->getLogOdds() ==node->getChild(6)->getLogOdds())  &&
+                      (node->getChild(6)->getLogOdds() ==node->getChild(7)->getLogOdds())){
+                  //id all the same,prune this one,
+                      node->pruneNode();
+                  }else{
+                          for (unsigned int i=0; i<8; i++) {
+                            if (node->childExists(i)) {
+                              pruneTree(node->getChild(i), depth+1);
+                            }
+                          }
+              }
+        }
+      }
+  }
+
   void ColorOcTree::updateInnerOccupancyRecurs(ColorOcTreeNode* node, unsigned int depth) {
     // only recurse and update for inner nodes:
     if (node->hasChildren()){
@@ -274,12 +332,6 @@ void ColorOcTree::searchDeleteById( list<ColorOcTreeNode*> & idList ,ColorOcTree
             //delete duplication
             sort(node->id.begin(),node->id.end());
             node->id.erase(unique(node->id.begin(), node->id.end()), node->id.end());
-//            //print
-//            cout<<"depth:"<<depth<<","<<i<<" children node id:\n";
-//            for(size_t m = 0;m<node->id.size();m++){
-//                 cout<<node->id[m]<<"\t";
-//            }
-//            cout<<endl;
           }
         }
       }

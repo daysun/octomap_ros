@@ -175,7 +175,10 @@ namespace octomap {
     ///search id
     list<ColorOcTreeNode*> searchId(int id);
     list<ColorOcTreeNode*> searchId2(int id);
+    void deleteById(int id);
     void searchDeleteById( list<ColorOcTreeNode*> & listId,ColorOcTreeNode* node, unsigned int depth,int sId);
+    void searchDeleteById(ColorOcTreeNode* node, unsigned int depth,int sId);
+    void pruneTree(ColorOcTreeNode* node, unsigned int depth);
 
     int getTreeDepth(){
         return this->tree_depth;

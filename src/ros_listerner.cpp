@@ -25,11 +25,12 @@ using namespace std;
 
 ///receive data(orb-slam published it) from ros
 /// saved it as sample.ot
-octomap::ColorOcTree tree( 0.03 );
+octomap::ColorOcTree tree( 0.05 );
 //octomap::ColorOcTree tree_change( 0.05 );
 
 //ros::Duration allTime;
 
+int countKF = 0;
 void chatterCallback(const octomap_ros::Id_PointCloud2::ConstPtr & my_msg)
 {    
 //      ros::Time tB = ros::Time::now();
@@ -50,7 +51,20 @@ void chatterCallback(const octomap_ros::Id_PointCloud2::ConstPtr & my_msg)
         tree.integrateNodeId(temp_cloud->points[i].x,temp_cloud->points[i].y,temp_cloud->points[i].z,
                              my_msg->kf_id);
     }
+
+    /// updateInnerOccupancy+pruneTree every twenty KF
+    countKF +=1;
+    if(countKF == 20){
+        cout<<"update\n";
+        ros::Time t1 = ros::Time::now();
     tree.updateInnerOccupancy();
+    tree.pruneTree(tree.getRoot(), 0);
+    ros::Time t2 = ros::Time::now();
+     ros::Duration bTcreate = t2-t1;
+//     cout<<"initial update time:"<<bTcreate.toSec()<<endl;
+    countKF = 0;
+    }
+//      std::cout << "---initial update:" <<tDel1.toSec()<< std::endl;
 //    ros::Duration bTcreate = ros::Time::now() - tB;
 //    allTime += bTcreate;
 //      std::cout << "time cost per key frame: " << bTcreate.toSec() << std::endl; //0.04
@@ -59,11 +73,14 @@ void chatterCallback(const octomap_ros::Id_PointCloud2::ConstPtr & my_msg)
 ///after ORB-SLAM local update, update the octomap
 void chatterCallback_change(const octomap_ros::Id_PointCloud2::ConstPtr & my_msg)
 {    
-    //delete accord to id--not done yet
-    cout<<"change:"<<my_msg->kf_id<<endl;
+    //delete accord to id
+//    cout<<"change:"<<my_msg->kf_id<<endl;
+    tree.deleteById(my_msg->kf_id); //0.02
+//    tree.updateInnerOccupancy();
+//        tree.pruneTree(tree.getRoot(), 0);
     
-    //add new pointCloud
-    /*pcl::PCLPointCloud2 pcl_pc2;
+    //add new pointCloud-0.03
+    pcl::PCLPointCloud2 pcl_pc2;
     pcl_conversions::toPCL(my_msg->msg,pcl_pc2);
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
     pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);
@@ -79,7 +96,8 @@ void chatterCallback_change(const octomap_ros::Id_PointCloud2::ConstPtr & my_msg
         tree.integrateNodeId(temp_cloud->points[i].x,temp_cloud->points[i].y,temp_cloud->points[i].z,
                              my_msg->kf_id);
     }
-    tree.updateInnerOccupancy();*/
+//    tree.updateInnerOccupancy();
+//    tree.pruneTree(tree.getRoot(), 0);
 }
 
 void coutInnerOccupancy(octomap::ColorOcTreeNode* node, unsigned int depth,int tree_depth) {
@@ -112,7 +130,7 @@ int main(int argc, char **argv)
   //test updateOccupancyChildren--test the children's log-odds
   //int tree_depth = tree.getTreeDepth();
   //coutInnerOccupancy(tree.getRoot(),0,tree_depth);
-
+  tree.updateInnerOccupancy();
   tree.write( "origin.ot" );
   cout<<"done."<<endl;
 

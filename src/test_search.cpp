@@ -7,7 +7,6 @@
 #include <octomap/octomap_timing.h>
 #include <octomap/math/Utils.h>
 
-#include "testing.h"
 
 using namespace std;
 using namespace octomap;
@@ -66,13 +65,7 @@ int main() {
   // set inner node colors
   tree.updateInnerOccupancy();
 
-  cout << endl;
-
-  std::string filename ("mine.ot");
-  std::cout << "Writing color tree to " << filename << std::endl;
-  // write color tree
-  //EXPECT_TRUE(tree.write(filename));
-  tree.write(filename);
+  cout << endl;  
 
   cout << "Performing some queries:" << endl;
   timeval t1,t2,t3;
@@ -84,7 +77,7 @@ int main() {
    list<  ColorOcTreeNode *> my_result2 = tree.searchId2(id);
     gettimeofday(&t3, NULL);
 
-    //time cost compare
+   /* //time cost compare
     std::cout << "time cost by search one by one: " << timediff(t1,t2) *100000<< std::endl; //67.4
     std::cout << "time cost by search using the id-structure: " << timediff(t2,t3) *100000<< std::endl;  //3.6
 
@@ -93,7 +86,15 @@ int main() {
     print_query_info(id, my_result);
     std::cout << "\nresult by search using the id-structure:  \n";
     print_query_info(id, my_result2);
-    cout<<endl;
+    cout<<endl;*/
+
+    tree.deleteById(-269);
+    tree.updateInnerOccupancy();
+
+    std::string filename ("mine.ot");
+    std::cout << "after delete:Writing color tree to " << filename << std::endl;
+    tree.write(filename);
+
 
 
 //  cout << "Print:" << endl;
