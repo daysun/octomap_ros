@@ -30,8 +30,9 @@ generate_messages(DEPENDENCIES std_msgs geometry_msgs sensor_msgs)
 
 catkin_package(
   INCLUDE_DIRS include ${OCTOMAP_INCLUDE_DIRS}
-  LIBRARIES ${PROJECT_NAME} ${OCTOMAP_LIBRARIES}
+  LIBRARIES  ${OCTOMAP_LIBRARIES}
   DEPENDS sensor_msgs tf octomap_msgs message_runtime geometry_msgs std_msgs)
+#${PROJECT_NAME}
 
 
 
@@ -46,35 +47,39 @@ LINK_LIBRARIES( ${PCL_LIBRARY_DIRS} )
 
 include_directories(${catkin_INCLUDE_DIRS})
 link_directories(${catkin_LIBRARY_DIRS})
-link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
+link_libraries( ${catkin_LIBRARIES})
+#${PROJECT_NAME}
 
 include_directories(${OCTOMAP_INCLUDE_DIRS})
 link_directories(${OCTOMAP_LIBRARY_DIRS})
-link_libraries(${PROJECT_NAME} ${OCTOMAP_LIBRARIES})
+link_libraries( ${OCTOMAP_LIBRARIES})
+#${PROJECT_NAME}
 
 include_directories(include)
 include_directories(include ${catkin_INCLUDE_DIRS})
 
-add_library(${PROJECT_NAME} src/conversions.cpp)
+#add_library(${PROJECT_NAME} src/conversions.cpp)
 
 add_executable(rcv_test
     include/octomap_ros/ColorOcTree.h
 src/ColorOcTree.cpp
 src/ros_listerner.cpp)
-target_link_libraries(rcv_test ${PROJECT_NAME}
+target_link_libraries(rcv_test
 ${PCL_LIBRARIES}
 ${OpenCV_LIBS} )
+#${PROJECT_NAME}
 
 add_executable(search_test
     include/octomap_ros/ColorOcTree.h
 src/ColorOcTree.cpp
     src/test_search.cpp)
-target_link_libraries(search_test ${PROJECT_NAME}
+target_link_libraries(search_test
 ${PCL_LIBRARIES}
 ${OpenCV_LIBS} )
+# ${PROJECT_NAME}
 
-install(TARGETS ${PROJECT_NAME} 
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
+#install(TARGETS ${PROJECT_NAME}
+#  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
 
 install(DIRECTORY include/octomap_ros/
   DESTINATION ${CATKIN_GLOBAL_INCLUDE_DESTINATION}/octomap_ros/
