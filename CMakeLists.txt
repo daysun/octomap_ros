@@ -22,7 +22,8 @@ endif()
  add_message_files(
 DIRECTORY msg
   FILES
-  Id_PointCloud2.msg
+  Id_PointCloud2.msg #recored the KF_id related to the pointCloud
+  loopId_PointCloud2.msg #recored the times of loopClosing
 )
 #生成消息
 generate_messages(DEPENDENCIES std_msgs geometry_msgs sensor_msgs)

@@ -80,15 +80,23 @@ int main() {
    /* //time cost compare
     std::cout << "time cost by search one by one: " << timediff(t1,t2) *100000<< std::endl; //67.4
     std::cout << "time cost by search using the id-structure: " << timediff(t2,t3) *100000<< std::endl;  //3.6
-
-    //result compare
-    std::cout << "result by search one by one: \n";
-    print_query_info(id, my_result);
-    std::cout << "\nresult by search using the id-structure:  \n";
-    print_query_info(id, my_result2);
-    cout<<endl;*/
-
+*/
     tree.deleteById(-269);
+
+    //test delete
+    tree.deleteTree();
+    cout<<"after delete\n";
+    for (int x=-20; x<20; x++) {
+      for (int y=-30; y<30; y++) {
+        for (int z=-20; z<20; z++) {
+          point3d endpoint ((float) x*0.05f+0.01f, (float) y*0.05f+0.01f, (float) z*0.05f+0.01f);
+          ColorOcTreeNode* n = tree.updateNode(endpoint, true);
+          n->setColor(z*5+100,x*5+100,y*5+100); // set color to red
+          tree.integrateNodeId((float) x*0.05f+0.01f, (float) y*0.05f+0.01f, (float) z*0.05f+0.01f,num);
+        }
+        num += y;
+      }
+    }
     tree.updateInnerOccupancy();
 
     std::string filename ("mine.ot");

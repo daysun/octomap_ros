@@ -42,7 +42,7 @@ namespace octomap {
 
 //    inline ColorOcTreeNode* getSelf() {
 //      return static_cast<ColorOcTreeNode*> (OcTreeNode::getChild(i));
-//    }    
+//    }        
 
     // children
     inline ColorOcTreeNode* getChild(unsigned int i) {
@@ -189,6 +189,13 @@ namespace octomap {
     }
 
     void printTree(ColorOcTreeNode * root, unsigned int depth);
+
+    void deleteTree(){
+        if(root){
+            delete root;
+        }
+        root = NULL;
+    }
 
   protected:
     void updateInnerOccupancyRecurs(ColorOcTreeNode* node, unsigned int depth);
