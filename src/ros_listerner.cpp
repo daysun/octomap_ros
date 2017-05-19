@@ -54,19 +54,18 @@ void chatterCallback(const octomap_ros::Id_PointCloud2::ConstPtr & my_msg)
                              my_msg->kf_id);
     }
 
-    /// updateInnerOccupancy+pruneTree every twenty KF
     countKF +=1;
     if(countKF == 20){
-        cout<<"update\n";
-        ros::Time t1 = ros::Time::now();
+        cout<<"updateInnerOccupancy + pruneTree every 20KF\n";
+//        ros::Time t1 = ros::Time::now();
     tree.updateInnerOccupancy();
-//    tree->pruneTree(tree->getRoot(), 0);
-    ros::Time t2 = ros::Time::now();
-     ros::Duration bTcreate = t2-t1;
+    tree.pruneTree(tree.getRoot(), 0);
+//    ros::Time t2 = ros::Time::now();
+//     ros::Duration bTcreate = t2-t1;
 //     cout<<"initial update time:"<<bTcreate.toSec()<<endl;
     countKF = 0;
     }
-//      std::cout << "---initial update:" <<tDel1.toSec()<< std::endl;
+//      std::cout << "initial update:" <<tDel1.toSec()<< std::endl;
 //    ros::Duration bTcreate = ros::Time::now() - tB;
 //    allTime += bTcreate;
 //      std::cout << "time cost per key frame: " << bTcreate.toSec() << std::endl; //0.04
@@ -79,7 +78,7 @@ void chatterCallback_local(const octomap_ros::Id_PointCloud2::ConstPtr & my_msg)
 //    cout<<"change:"<<my_msg->kf_id<<endl;
     tree.deleteById(my_msg->kf_id); //0.02
 //    tree.updateInnerOccupancy();
-//        tree.pruneTree(tree.getRoot(), 0);
+//    tree.pruneTree(tree.getRoot(), 0);
     
     //add new pointCloud-0.03
     pcl::PCLPointCloud2 pcl_pc2;
@@ -98,25 +97,26 @@ void chatterCallback_local(const octomap_ros::Id_PointCloud2::ConstPtr & my_msg)
         tree.integrateNodeId(temp_cloud->points[i].x,temp_cloud->points[i].y,temp_cloud->points[i].z,
                              my_msg->kf_id);
     }
-//    tree->updateInnerOccupancy();
-//    tree->pruneTree(tree->getRoot(), 0);
+    //    tree.updateInnerOccupancy();
+    //    tree.pruneTree(tree.getRoot(), 0);
 }
 
 ///after ORB-SLAM global update
 void chatterCallback_global(const octomap_ros::loopId_PointCloud2::ConstPtr & my_msg){
+    //delete the old tree
     if(loopNum == -1){
         //the first time
-        tree.deleteTree();//delete the old tree
+        tree.deleteTree();
         loopNum = my_msg->loop_id;
     }else{
         //not the first time
         if(loopNum != my_msg->loop_id){
-            tree.deleteTree();//delete the old tree
+            tree.deleteTree();
             loopNum = my_msg->loop_id;
         }
     }
 
-    cout<<"global:"<<my_msg->kf_id<<",loopNUm:"<<loopNum<<endl;
+    cout<<"global:"<<my_msg->kf_id<<",loopNum:"<<loopNum<<endl;
 
     pcl::PCLPointCloud2 pcl_pc2;
     pcl_conversions::toPCL(my_msg->msg,pcl_pc2);

@@ -103,8 +103,6 @@ int main() {
     std::cout << "after delete:Writing color tree to " << filename << std::endl;
     tree.write(filename);
 
-
-
 //  cout << "Print:" << endl;
 //  tree.printTree(tree.getRoot(),0);
 

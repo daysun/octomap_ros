@@ -79,7 +79,6 @@ namespace octomap {
   // pruning-consider prune it when the id are the same
   bool ColorOcTreeNode::pruneNode() {
     // checks for equal occupancy only, color ignored
-//      cout<<"==prune\n";
     if (!this->collapsible()) return false;
     // set occupancy value
     setLogOdds(getChild(0)->getLogOdds());
@@ -287,39 +286,30 @@ void ColorOcTree::searchDeleteById( list<ColorOcTreeNode*> & idList ,ColorOcTree
   void ColorOcTree::pruneTree(ColorOcTreeNode* node, unsigned int depth){
       if (node->hasChildren()){
         if (depth < this->tree_depth){
-              if(node->childExists(0) && node->childExists(1) &&
-                      node->childExists(2) && node->childExists(3) &&
-                      node->childExists(4) && node->childExists(5) &&
-                      node->childExists(6) && node->childExists(7) &&
-                            (node->getChild(0)->id ==node->getChild(1)->id) &&
-                          (node->getChild(1)->id ==node->getChild(2)->id)  &&
-                          (node->getChild(2)->id ==node->getChild(3)->id)  &&
-                          (node->getChild(3)->id ==node->getChild(4)->id) &&
-                          (node->getChild(4)->id ==node->getChild(5)->id) &&
-                          (node->getChild(5)->id ==node->getChild(6)->id)  &&
-                          (node->getChild(6)->id ==node->getChild(7)->id)   &&
-                      (node->getChild(0)->getLogOdds() ==node->getChild(1)->getLogOdds()) &&
-                      (node->getChild(1)->getLogOdds() ==node->getChild(2)->getLogOdds())  &&
-                      (node->getChild(2)->getLogOdds() ==node->getChild(3)->getLogOdds())  &&
-                      (node->getChild(3)->getLogOdds() ==node->getChild(4)->getLogOdds()) &&
-                      (node->getChild(4)->getLogOdds() ==node->getChild(5)->getLogOdds()) &&
-                      (node->getChild(5)->getLogOdds() ==node->getChild(6)->getLogOdds())  &&
-                      (node->getChild(6)->getLogOdds() ==node->getChild(7)->getLogOdds())){
-                  //id all the same,prune this one,
-                      node->pruneNode();
-                  }else{
-                          for (unsigned int i=0; i<8; i++) {
-                            if (node->childExists(i)) {
-                              pruneTree(node->getChild(i), depth+1);
-                            }
-                          }
-              }
+            if(node->childExists(0) && node->childExists(1) && node->childExists(2) && node->childExists(3) &&
+                node->childExists(4) && node->childExists(5) &&node->childExists(6) && node->childExists(7)){
+                //if they are all leaves && their ids are the same, then prune it
+                if(!node->getChild(0)->hasChildren()&&!node->getChild(1)->hasChildren()&&!node->getChild(2)->hasChildren()&&!node->getChild(3)->hasChildren()&&
+                   !node->getChild(4)->hasChildren()&&!node->getChild(5)->hasChildren()&&!node->getChild(6)->hasChildren()&&!node->getChild(7)->hasChildren()){
+                    if( (node->getChild(0)->id ==node->getChild(1)->id) &&(node->getChild(1)->id ==node->getChild(2)->id)  &&
+                        (node->getChild(2)->id ==node->getChild(3)->id)  && (node->getChild(3)->id ==node->getChild(4)->id) &&
+                        (node->getChild(4)->id ==node->getChild(5)->id) && (node->getChild(5)->id ==node->getChild(6)->id)  &&
+                        (node->getChild(6)->id ==node->getChild(7)->id))
+                        node->pruneNode();
+                }
+            }else{
+                for (unsigned int i=0; i<8; i++) {
+                  if (node->childExists(i)) {
+                    pruneTree(node->getChild(i), depth+1);
+                  }
+                }
+            }
         }
       }
   }
 
   void ColorOcTree::updateInnerOccupancyRecurs(ColorOcTreeNode* node, unsigned int depth) {
-    // only recurse and update for inner nodes:
+    // only recurse and update for inner nodes
     if (node->hasChildren()){
       // return early for last level:
       if (depth < this->tree_depth){
