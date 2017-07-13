@@ -78,6 +78,14 @@ ${PCL_LIBRARIES}
 ${OpenCV_LIBS} )
 # ${PROJECT_NAME}
 
+add_executable(runtime_test
+    include/octomap_ros/ColorOcTree.h
+src/ColorOcTree.cpp
+src/test_runtime.cpp)
+target_link_libraries(runtime_test
+${PCL_LIBRARIES}
+${OpenCV_LIBS} )
+
 #install(TARGETS ${PROJECT_NAME}
 #  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
 
