@@ -78,7 +78,6 @@ ${PCL_LIBRARIES}
 ${OpenCV_LIBS} )
 # ${PROJECT_NAME}
 
-
 add_executable(runtime_test
     include/octomap_ros/ColorOcTree.h
 src/ColorOcTree.cpp
