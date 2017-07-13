@@ -65,7 +65,7 @@ int main() {
   // set inner node colors
   tree.updateInnerOccupancy();
 
-  cout << endl;  
+  cout << endl;
 
   cout << "Performing some queries:" << endl;
   timeval t1,t2,t3;

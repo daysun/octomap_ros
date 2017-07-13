@@ -202,6 +202,23 @@ list<ColorOcTreeNode*> ColorOcTree::searchId(int id){
     return idList;
 }
 
+//for testing--compare the time between id-set and without it
+void ColorOcTree::deleteIdWIthoutSet2(int id){
+  //  list<ColorOcTreeNode*> idList;
+    int depth = this->getTreeDepth();
+    ColorOcTree::tree_iterator t_it = this->begin_tree(depth);
+    ColorOcTree::tree_iterator t_end = this->end_tree();
+    std::vector<int> a;
+    a.push_back(id);
+    for( ; t_it != t_end; ++t_it){
+        if((*t_it).getId() == a){
+            //find it! delete it!
+            (* t_it).setLogOdds(octomap::AbstractOccupancyOcTree::getProbMissLog());
+        }
+    }
+}
+
+
 bool isContained(vector<int> id,int key){
     int low=0;
     int high=id.size()-1;
@@ -224,19 +241,47 @@ void ColorOcTree::deleteById(int id){
     this->searchDeleteById(this->root,0,id);
 //    this->updateInnerOccupancy();
 }
+
 void ColorOcTree::searchDeleteById(ColorOcTreeNode* node, unsigned int depth,int sId){
+    if(isContained(node->id,sId)){
+        if (node->hasChildren()){
+          if (depth < this->tree_depth)
+//              if(isContained(node->id,sId))
+                  for (unsigned int i=0; i<8; i++)
+                    if (node->childExists(i))
+                      searchDeleteById(node->getChild(i), depth+1,sId);
+        }else{
+             if(isContained(node->id,sId))
+                 //set unoccupied
+                 node->setLogOdds(octomap::AbstractOccupancyOcTree::getProbMissLog());
+             //father node
+             else return;
+        }
+    }else{
+        return;
+    }
+}
+
+//without id-set
+void ColorOcTree::deleteByIdWithoutSet(int id){
+      this->searchDeleteByIdWithoutSet(this->root,0,id);
+}
+
+void ColorOcTree::searchDeleteByIdWithoutSet(ColorOcTreeNode* node, unsigned int depth,int sId){
     if (node->hasChildren()){
       if (depth < this->tree_depth)
-          if(isContained(node->id,sId))
+         // if(isContained(node->id,sId))
               for (unsigned int i=0; i<8; i++)
                 if (node->childExists(i))
                   searchDeleteById(node->getChild(i), depth+1,sId);
-    }else{
+    }else{ //leaf
          if(isContained(node->id,sId))
              //set unoccupied
              node->setLogOdds(octomap::AbstractOccupancyOcTree::getProbMissLog());
     }
 }
+
+
 
 //using id-structure to search
 //for test

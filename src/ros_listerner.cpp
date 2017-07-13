@@ -29,7 +29,8 @@ using namespace std;
 octomap::ColorOcTree tree( 0.05 );
 int loopNum = -1;
 
-//ros::Duration allTime;
+ofstream outfile("/home/daysun/GlobalTime.txt", ofstream::app);
+ros::Duration bTcreate;
 
 int countKF = 0;
 ///initial insert
@@ -79,7 +80,7 @@ void chatterCallback_local(const octomap_ros::Id_PointCloud2::ConstPtr & my_msg)
     tree.deleteById(my_msg->kf_id); //0.02
 //    tree.updateInnerOccupancy();
 //    tree.pruneTree(tree.getRoot(), 0);
-    
+
     //add new pointCloud-0.03
     pcl::PCLPointCloud2 pcl_pc2;
     pcl_conversions::toPCL(my_msg->msg,pcl_pc2);
@@ -103,6 +104,7 @@ void chatterCallback_local(const octomap_ros::Id_PointCloud2::ConstPtr & my_msg)
 
 ///after ORB-SLAM global update
 void chatterCallback_global(const octomap_ros::loopId_PointCloud2::ConstPtr & my_msg){
+    ros::Time tGlobal1 = ros::Time::now();
     //delete the old tree
     if(loopNum == -1){
         //the first time
@@ -134,6 +136,8 @@ void chatterCallback_global(const octomap_ros::loopId_PointCloud2::ConstPtr & my
         tree.integrateNodeId(temp_cloud->points[i].x,temp_cloud->points[i].y,temp_cloud->points[i].z,
                              my_msg->kf_id);
     }
+            ros::Time tGlobal2 = ros::Time::now();
+         bTcreate = bTcreate+(tGlobal2-tGlobal1);
 }
 
 void coutInnerOccupancy(octomap::ColorOcTreeNode* node, unsigned int depth,int tree_depth) {
@@ -155,6 +159,7 @@ int main(int argc, char **argv)
   ros::start();
 
   ros::NodeHandle n;
+  bTcreate=  ros::Time::now()-  ros::Time::now();
 
   ros::Subscriber sub = n.subscribe("/ORB_SLAM/pointcloud2", 1000, chatterCallback);
   ros::Subscriber sub_change = n.subscribe("ORB_SLAM/pointcloudlocalup2", 1000, chatterCallback_local);
@@ -168,7 +173,13 @@ int main(int argc, char **argv)
   //int tree_depth = tree.getTreeDepth();
   //coutInnerOccupancy(tree.getRoot(),0,tree_depth);
 
+  //count global time
+
+           outfile<<bTcreate.toSec()*1000<<"\t";  //micro sec
+           cout<<"global time:"<<bTcreate.toSec()*1000<<endl;
+
   tree.updateInnerOccupancy();
+  tree.pruneTree(tree.getRoot(), 0);
   tree.write( "origin.ot" );
   cout<<"done."<<endl;
 

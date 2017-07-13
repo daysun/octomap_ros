@@ -178,7 +178,10 @@ namespace octomap {
     void deleteById(int id);
     void searchDeleteById( list<ColorOcTreeNode*> & listId,ColorOcTreeNode* node, unsigned int depth,int sId);
     void searchDeleteById(ColorOcTreeNode* node, unsigned int depth,int sId);
+    void deleteIdWIthoutSet2(int id);
     void pruneTree(ColorOcTreeNode* node, unsigned int depth);
+    void searchDeleteByIdWithoutSet(ColorOcTreeNode* node, unsigned int depth,int sId);
+    void deleteByIdWithoutSet(int id);
 
     int getTreeDepth(){
         return this->tree_depth;
