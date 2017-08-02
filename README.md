@@ -17,9 +17,9 @@ You should put this project under your ROS work space, such as <i>your_ros_path/
 
 &ensp;&ensp;This procedure receives msg(Type: Id_PointCloud2) from ROS, which named “/ORB_SLAM/pointcloud2” . And it will transform the msg into the octomap format.<br/>
 &ensp;&ensp;Try "Ctrl+C" to stop it any time you want, which would generate origin.ot. You can view it in octovis.<br/>
-&ensp;&ensp;<i>octovis  origin.ot</i><br/>
+&ensp;&ensp;<i>octovis  origin.ot</i><br/><br/>
 2、 <i>rosrun octomap_ros runtime_test</i><br/>
-&ensp;&ensp;For experments.<br/>
+&ensp;&ensp;For experiments.<br/>
 &ensp;&ensp;Show that our system can perform on-line. The usage is the same with the former one.<br/>
-&ensp;&ensp;And the results built by original grid mapping, original grid mapping and local grid mapping, and complete update strategy can be attained in /data/*.ot.<br/>
+&ensp;&ensp;And the results built by original grid mapping, original grid mapping and local grid mapping, and complete update strategy using our experimental data can be attained in /data/*.ot.<br/>
 &ensp;&ensp;The experiments are also shown in a vedio online(http://v.youku.com/v_show/id_XMjg5MTA1OTg4OA).<br/>
