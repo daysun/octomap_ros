@@ -22,4 +22,4 @@ You should put this project under your ROS work space, such as <i>your_ros_path/
 &ensp;&ensp;For experments.<br/>
 &ensp;&ensp;Show that our system can perform on-line. The usage is the same with the former one.<br/>
 &ensp;&ensp;And the results built by original grid mapping, original grid mapping and local grid mapping, and complete update strategy can be attained in /data/*.ot.<br/>
-&ensp;&ensp;The experiments are also shown in a vedio online(v.youku.com/v_show/id_XMjg5MTA1OTg4OA).<br/>
+&ensp;&ensp;The experiments are also shown in a vedio online(http://v.youku.com/v_show/id_XMjg5MTA1OTg4OA).<br/>
