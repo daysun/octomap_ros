@@ -1,13 +1,13 @@
 octomap_ros
-
-###Related Publications:
-    @inproceedings{Yang2017Real,
-      title={Real-time Globally Consistent 3D Grid Mapping},
-      author={Yang, Sining and Yang, Shaowu and Yi, Xiaodong},
-      booktitle={IEEE International Conference on Robotics and Biomimetics},
-      year={2017},
-    }
 ===========
+<b>Related Publications:</b><br/>
+    @inproceedings{Yang2017Real,<br/>
+     &ensp; title={Real-time Globally Consistent 3D Grid Mapping},<br/>
+     &ensp; author={Yang, Sining and Yang, Shaowu and Yi, Xiaodong},<br/>
+     &ensp; booktitle={IEEE International Conference on Robotics and Biomimetics},<br/>
+     &ensp; year={2017},<br/>
+    }<br/>
+    
 <b>Dependencies</b><br/>
 1、OpenCV(http://docs.opencv.org/master/d9/df8/tutorial_root.html)<br/>
 2、octomap(https://github.com/OctoMap/octomap) && octovis(http://wiki.ros.org/octovis)<br/>
