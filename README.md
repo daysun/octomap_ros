@@ -1,4 +1,12 @@
 octomap_ros
+
+###Related Publications:
+    @inproceedings{Yang2017Real,
+      title={Real-time Globally Consistent 3D Grid Mapping},
+      author={Yang, Sining and Yang, Shaowu and Yi, Xiaodong},
+      booktitle={IEEE International Conference on Robotics and Biomimetics},
+      year={2017},
+    }
 ===========
 <b>Dependencies</b><br/>
 1、OpenCV(http://docs.opencv.org/master/d9/df8/tutorial_root.html)<br/>
@@ -6,6 +14,7 @@ octomap_ros
 3、PCL(http://pointclouds.org/downloads/)<br/>
 4、genmsg(https://github.com/ros/genmsg)<br/>
 5、octomap_msgs(https://github.com/OctoMap/octomap_msgs/tree/indigo-devel)<br/>
+6、orb-slam2(git@github.com:daysun/ORB-SLAM2.git)<br/>
 
 <b>Compile</b><br/>
 You should put this project under your ROS work space, such as <i>your_ros_path/src/</i><br/>
