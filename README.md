@@ -10,7 +10,7 @@ octomap_ros
     
 <b>Dependencies</b><br/>
 1、OpenCV(http://docs.opencv.org/master/d9/df8/tutorial_root.html)<br/>
-2、octomap(https://github.com/OctoMap/octomap) && octovis(http://wiki.ros.org/octovis)<br/>
+*2、The modified octomap(https://github.com/daysun/octomap/) && octovis(http://wiki.ros.org/octovis)<br/>
 3、PCL(http://pointclouds.org/downloads/)<br/>
 4、genmsg(https://github.com/ros/genmsg)<br/>
 5、octomap_msgs(https://github.com/OctoMap/octomap_msgs/tree/indigo-devel)<br/>
