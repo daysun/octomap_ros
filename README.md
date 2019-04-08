@@ -14,7 +14,7 @@ octomap_ros
 3、PCL(http://pointclouds.org/downloads/)<br/>
 4、genmsg(https://github.com/ros/genmsg)<br/>
 5、octomap_msgs(https://github.com/OctoMap/octomap_msgs/tree/indigo-devel)<br/>
-6、orb-slam2(git@github.com:daysun/ORB-SLAM2.git)<br/>
+<b>6、the modified orb-slam2(https://github.com/daysun/ORB-SLAM2)</b><br/>
 
 <b>Compile</b><br/>
 You should put this project under your ROS work space, such as <i>your_ros_path/src/</i><br/>
